@@ -103,6 +103,7 @@ class VisualSpeechSynth(SimpleSpeechSynth):
                 current_time = time.time() - start_time
 
                 #Find current mouth positon based on elapsed time
+                #if the time has changed, then we update the mouth, and then set cur pos fwd
                 while (current_pos < len(time_points) and
                        current_time >= time_points[current_pos]):
                     self.draw_mouth(mouth_positions[current_pos])
@@ -140,8 +141,47 @@ class VisualSpeechSynth(SimpleSpeechSynth):
         pitchmod = 0
 
 
+        sound_map = {
+            'i': ('ee', vowels['ee']),
+            'a': ('ah', vowels['ah']),
+            'e': ('eh', vowels['eh']),
+            'o': ('oh', vowels['oh']),
+            'u': ('u', vowels['u']),
+            'm': ('m', vowels['m']),
+            'l': ('l', vowels['l']),
+            'd': ('d', vowels['d']),
+            't': ('t', vowels['t']),
+        }
+
+        for char in word:
+            if char in sound_map:
+                pos, formant = sound_map[char]
+                word_formants.append(formant)
+                word_durations.append(duration)
+                word_vibrato.append(vibrato)
+                word_pitch.append(pitchmod)
+                mouth_positions.append(pos)
+            elif char == '~':
+                vibrato = True
+            elif char == '_':
+                vibrato = False
+            elif char == '+':
+                pitchmod += 1
+            elif char == '-':
+                pitchmod -= 1
+            elif char == ">":
+                duration = max(0.1, duration - 0.05)
+            elif char == '<':
+                duration = min(0.5, duration + 0.05)
+                
+        if word_formants:
+            sound = self.makeSoundSequence(word_formants, word_durations, 
+                                         word_vibrato, word_pitch)
+            self.play_synchronized(sound, mouth_positions, word_durations)
+
+
         
-        # Process each character
+        """ # Process each character
         for char in word:
             # Handle modifiers
             if char == '~':
@@ -242,7 +282,7 @@ class VisualSpeechSynth(SimpleSpeechSynth):
             sound = self.makeSoundSequence(word_formants, word_durations, 
                                          word_vibrato, word_pitch)
             self.play_synchronized(sound, mouth_positions,word_durations)
-        
+       """ 
 
 # Main loop
 if __name__ == "__main__":
