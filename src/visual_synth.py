@@ -14,6 +14,11 @@ class VisualSpeechSynth(SimpleSpeechSynth):
 
         # Pygame visual display
         pygame.init()
+
+        # init fonts
+        pygame.font.init()
+        self.font = pygame.font.Font(None,36)
+
         
         self.screen_width = 400
         self.screen_height = 400
@@ -30,7 +35,12 @@ class VisualSpeechSynth(SimpleSpeechSynth):
         self.sprite_width = 200
         self.sprite_height = 200
 
-        
+        # text input properties
+        self.input_box = pygame.Rect(50, 300, 300, 40)
+        self.input_text = ""
+        self.input_active = False
+        self.text_color = pygame.Color('black')
+        self.input_box_color = pygame.Color('lightgray')
 
         self.mouth_positions = {
             'ah':(0,0),
@@ -48,7 +58,24 @@ class VisualSpeechSynth(SimpleSpeechSynth):
         #init with neutral mouth pos
         self.screen.fill((173, 216, 230)) #light blue
         self.draw_mouth('m')
+        self.draw_input_box()
         pygame.display.flip()
+    
+    def draw_input_box(self):
+        #drasw the box
+        pygame.draw.rect(self.screen, self.input_box_color, self.input_box,2)
+
+        #render the text
+        text_surface = self.font.render(self.input_text, True, self.text_color)
+
+        #Ensuer text wont overflow the input box
+        width = max(300, text_surface.get_width() + 10)
+        self.input_box.w = width
+
+        #center the text vertically and maintain left alignment
+        text_y = self.input_box.y + (self.input_box.height - text_surface.get_height()) // 2
+        self.screen.blit(text_surface, (self.input_box.x + 5, text_y))
+
 
     def get_sprite(self,row,col):
             """Extract a single sprite from the spreadsheet/"""
@@ -66,7 +93,7 @@ class VisualSpeechSynth(SimpleSpeechSynth):
     def draw_mouth(self, sound):
         # Fill the background
         #print("Drawing mouth...")
-        self.screen.fill((173, 216, 230)) #light blue
+        self.screen.fill((255,255,255)) #light blue
 
         #get sprite positon for this sound
         row, col = self.mouth_positions.get(sound, (1,4)) #default to closed mouth sprite
@@ -173,15 +200,66 @@ class VisualSpeechSynth(SimpleSpeechSynth):
                 duration = max(0.1, duration - 0.05)
             elif char == '<':
                 duration = min(0.5, duration + 0.05)
+            elif char == '|':
+                sd.sleep(200)
+                time.sleep(0.2)
+            elif char == '/':
+                sd.sleep(100)
+                time.sleep(0.1)
 
         if word_formants:
             sound = self.makeSoundSequence(word_formants, word_durations, 
                                          word_vibrato, word_pitch)
             self.play_synchronized(sound, mouth_positions, word_durations)
-            
+    def run(self):
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                        #toggle input box active state
+                        if self.input_box.collidepoint(event.pos):
+                            self.input_active = True
+                            self.input_box_color = pygame.Color('dodgerblue2')
+                        else:
+                            self.input_active = False
+                            self.input_box_color = pygame.Color('white')
+                        self.draw_input_box()
+                        pygame.display.flip()
+                elif event.type == pygame.KEYDOWN:
+                    if self.input_active:
+                        if event.key == pygame.K_RETURN:
+                            #process the input text
+                            words = self.input_text.split()
+                            for word in words:
+                                self.process_word(word)
+                                sd.sleep(100) #pause between words
+                            self.input_text = " " #clear input after processing
+                        elif event.key == pygame.K_BACKSPACE:
+                            self.input_text = self.input_text[:-1]
+                            self.input_text = " "
+                        else:
+                            self.input_text += event.unicode
+                        
+                        #redraw input box with new text
+                        self.draw_input_box()
+                        pygame.display.flip()
+            # small sleep
+            time.sleep(0.016)
+        pygame.quit()
+
+
 # Main loop
 if __name__ == "__main__":
     synth = VisualSpeechSynth()
+    synth.run()
+
+    """
+    ==========================================================
+    to run in the terminal instead of in the pygame window
+    ==========================================================
 
     print("Visual Speech Synthesizer")
     print("Enter text to speak (or 'quit' to exit)")
@@ -206,3 +284,4 @@ if __name__ == "__main__":
 
     # Cleanup
     pygame.quit()
+    """
