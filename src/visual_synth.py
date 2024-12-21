@@ -93,7 +93,7 @@ class VisualSpeechSynth(SimpleSpeechSynth):
     def draw_mouth(self, sound):
         # Fill the background
         #print("Drawing mouth...")
-        self.screen.fill((255,255,255)) #light blue
+        self.screen.fill((173, 216, 230)) #light blue
 
         #get sprite positon for this sound
         row, col = self.mouth_positions.get(sound, (1,4)) #default to closed mouth sprite
