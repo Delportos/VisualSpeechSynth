@@ -173,117 +173,12 @@ class VisualSpeechSynth(SimpleSpeechSynth):
                 duration = max(0.1, duration - 0.05)
             elif char == '<':
                 duration = min(0.5, duration + 0.05)
-                
+
         if word_formants:
             sound = self.makeSoundSequence(word_formants, word_durations, 
                                          word_vibrato, word_pitch)
             self.play_synchronized(sound, mouth_positions, word_durations)
-
-
-        
-        """ # Process each character
-        for char in word:
-            # Handle modifiers
-            if char == '~':
-                vibrato = True
-            elif char == '_':
-                vibrato = False
-            elif char == '+':
-                pitchmod += 1
-            elif char == '-':
-                pitchmod -= 1
-            elif char == '|':
-                sd.sleep(250)
-            elif char == '/':
-                sd.sleep(200)
-            elif char == '>':
-                duration -= 0.05
-            elif char == '<':
-                duration += 0.05
-            else:
-                # Process sounds and collect parameters
-                if char == 'i':
-                    word_formants.append(vowels['ee'])
-                    word_durations.append(duration)
-                    word_vibrato.append(vibrato)
-                    word_pitch.append(pitchmod)
-                    mouth_positions.append('ee')
-                    #self.draw_mouth('ee')
-                    #pygame.time.wait(int(duration * msduration_v))  # Convert to milliseconds
-
-                elif char == 'a':
-                    word_formants.append(vowels['ah'])
-                    word_durations.append(duration)
-                    word_vibrato.append(vibrato)
-                    word_pitch.append(pitchmod)
-                    mouth_positions.append('ah')
-                    #self.draw_mouth('ah')
-                    #pygame.time.wait(int(duration * msduration_v))  # Convert to milliseconds
-                elif char == 'e':
-                    word_formants.append(vowels['eh'])
-                    word_durations.append(duration)
-                    word_vibrato.append(vibrato)
-                    word_pitch.append(pitchmod)
-                    mouth_positions.append('eh')
-                    #self.draw_mouth('eh')
-                    #pygame.time.wait(int(duration * msduration_v))  # Convert to milliseconds
-                elif char == 'o':
-                    word_formants.append(vowels['oh'])
-                    word_durations.append(duration)
-                    word_vibrato.append(vibrato)
-                    word_pitch.append(pitchmod)
-                    mouth_positions.append('oh')
-                    #self.draw_mouth('oh')
-                    #pygame.time.wait(int(duration * msduration_v))  # Convert to milliseconds
-                elif char == 'u':
-                    word_formants.append(vowels['u'])
-                    word_durations.append(duration)
-                    word_vibrato.append(vibrato)
-                    word_pitch.append(pitchmod)
-                    mouth_positions.append('u')
-                    #self.draw_mouth('u')
-                    #pygame.time.wait(int(duration * msduration_v))  # Convert to milliseconds
-                #'consonants'
-                elif char == 'm':
-                    word_formants.append(vowels['m'])
-                    word_durations.append(duration)
-                    word_vibrato.append(vibrato)
-                    word_pitch.append(pitchmod)
-                    mouth_positions.append('m')
-                    #self.draw_mouth('m')
-                    #pygame.time.wait(int(duration * msduration_c))  # Convert to milliseconds
-                elif char == 'l':
-                    word_formants.append(vowels['l'])
-                    word_durations.append(duration)
-                    word_vibrato.append(vibrato)
-                    word_pitch.append(pitchmod)
-                    mouth_positions.append('l')
-                    #self.draw_mouth('l')
-                    #pygame.time.wait(int(duration * msduration_c))  # Convert to milliseconds
-                elif char == 'd':
-                    word_formants.append(vowels['d'])
-                    word_durations.append(duration)
-                    word_vibrato.append(vibrato)
-                    word_pitch.append(pitchmod)
-                    mouth_positions.append('d')
-                    #self.draw_mouth('d')
-                    #pygame.time.wait(int(duration * msduration_c))  # Convert to milliseconds
-                elif char == 't':
-                    word_formants.append(vowels['t'])
-                    word_durations.append(duration)
-                    word_vibrato.append(vibrato)
-                    word_pitch.append(pitchmod)
-                    mouth_positions.append('t')
-                    #self.draw_mouth('t')
-                    #pygame.time.wait(int(duration * msduration_c))  # Convert to milliseconds
-                
-        # Generate and play the complete word
-        if word_formants:
-            sound = self.makeSoundSequence(word_formants, word_durations, 
-                                         word_vibrato, word_pitch)
-            self.play_synchronized(sound, mouth_positions,word_durations)
-       """ 
-
+            
 # Main loop
 if __name__ == "__main__":
     synth = VisualSpeechSynth()
